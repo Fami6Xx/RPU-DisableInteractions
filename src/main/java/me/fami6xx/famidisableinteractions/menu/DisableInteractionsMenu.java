@@ -65,7 +65,12 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
                 isDisabled ? "&7Click to enable interactions." : "&7Click to disable interactions."
         };
 
-        return FamiUtils.makeItem(material, displayName, lore);
+        try {
+            return FamiUtils.makeItem(material, displayName, lore);
+        } catch (Exception e) {
+            plugin.getLogger().severe("Error creating ItemStack for material: " + material.name());
+            return null;
+        }
     }
 
     @Override
@@ -95,6 +100,7 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
         } else if (clickedType == Material.BARRIER && displayName.equalsIgnoreCase("Close")) {
             playerMenu.getPlayer().closeInventory();
         } else if (clickedType == Material.STONE_BUTTON && (displayName.equalsIgnoreCase("Next Page") || displayName.equalsIgnoreCase("Previous Page"))) {
+            // Handled by superclass
         } else {
             // Handle block item clicks
             if (!clickedItem.hasItemMeta() || !clickedItem.getItemMeta().hasDisplayName()) {
@@ -146,7 +152,7 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
     private List<Material> getInteractableBlockMaterials() {
         Set<Material> materials = new HashSet<>();
         for (Material material : Material.values()) {
-            if (material.isBlock() && material.isInteractable()) {
+            if (material.isBlock() && material.isInteractable() && material.isItem()) {
                 materials.add(material);
             }
         }
