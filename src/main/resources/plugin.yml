@@ -2,6 +2,7 @@ name: RPU-DisableInteractions
 version: '${project.version}'
 main: me.fami6xx.famidisableinteractions.Fami_DisableInteractions
 api-version: '1.14'
+dependency: [RPUniverse]
 commands:
   disableinteractions:
     description: Opens the disable interactions menu
