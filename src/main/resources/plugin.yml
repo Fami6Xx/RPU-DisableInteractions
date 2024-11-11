@@ -1,0 +1,4 @@
+name: Fami-DisableInteractions
+version: '${project.version}'
+main: me.fami6xx.famidisableinteractions.Fami_DisableInteractions
+api-version: '1.14'
