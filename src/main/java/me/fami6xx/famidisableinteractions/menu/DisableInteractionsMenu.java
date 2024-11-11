@@ -46,7 +46,17 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
             this.displayMaterials = new ArrayList<>();
             for (Material material : allMaterials) {
                 if (material.name().toLowerCase().contains(searchQuery.toLowerCase())) {
-                    displayMaterials.add(material);
+                    if (material.isBlock() && material.isInteractable() && material.isItem())
+                        displayMaterials.add(material);
+                }else{
+                    String[] split = material.name().split("_");
+                    for (String s : split) {
+                        if(s.toLowerCase().contains(searchQuery.toLowerCase())){
+                            if (material.isBlock() && material.isInteractable() && material.isItem())
+                                displayMaterials.add(material);
+                            break;
+                        }
+                    }
                 }
             }
         }
