@@ -9,12 +9,22 @@ commands:
     usage: /disableinteractions
     permission: disableinteractions.manage
     aliases:
-    - di
-    - disable
+      - di
+      - disable
+  dibypass:
+    description: Toggles bypass mode for disabled interactions
+    usage: /dibypass
+    permission: disableinteractions.bypass
+    aliases:
+      - dib
+      - disableinteractionsbypass
 permissions:
   disableinteractions.override:
     description: Allows overriding disabled interactions
     default: false
   disableinteractions.manage:
     description: Allows managing disabled interactions
+    default: op
+  disableinteractions.bypass:
+    description: Allows toggling bypass mode
     default: op
