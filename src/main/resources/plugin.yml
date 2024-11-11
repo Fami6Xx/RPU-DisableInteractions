@@ -1,4 +1,19 @@
-name: Fami-DisableInteractions
+name: RPU-DisableInteractions
 version: '${project.version}'
 main: me.fami6xx.famidisableinteractions.Fami_DisableInteractions
 api-version: '1.14'
+commands:
+  disableinteractions:
+    description: Opens the disable interactions menu
+    usage: /disableinteractions
+    permission: disableinteractions.manage
+    aliases:
+    - di
+    - disable
+permissions:
+  disableinteractions.override:
+    description: Allows overriding disabled interactions
+    default: false
+  disableinteractions.manage:
+    description: Allows managing disabled interactions
+    default: op
