@@ -6,6 +6,7 @@ import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
 import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,7 +35,7 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
     }
 
     private void initializeMaterials() {
-        this.allMaterials = getInteractableMaterials();
+        this.allMaterials = getInteractableBlockMaterials();
         updateDisplayMaterials();
     }
 
@@ -78,19 +79,33 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
         if (clickedItem == null) return;
 
         Material clickedType = clickedItem.getType();
-        String displayName = clickedItem.getItemMeta().getDisplayName();
+        String displayName = ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName());
 
-        if (clickedType == Material.COMPASS) {
+        // Check if the clicked item is one of the control items
+        if (clickedType == Material.COMPASS && displayName.equalsIgnoreCase("Search")) {
             // Search button clicked
             playerMenu.getPlayer().closeInventory();
             playerMenu.getPlayer().sendMessage(FamiUtils.formatWithPrefix("&aPlease enter your search query in chat."));
             awaitingSearchInput = true;
-        } else if (clickedType == Material.BARRIER && displayName.contains("Reset Search")) {
+        } else if (clickedType == Material.BARRIER && displayName.equalsIgnoreCase("Reset Search")) {
             // Reset search
             searchQuery = "";
             updateDisplayMaterials();
             this.open();
+        } else if (clickedType == Material.BARRIER && displayName.equalsIgnoreCase("Close")) {
+            playerMenu.getPlayer().closeInventory();
+        } else if (clickedType == Material.STONE_BUTTON && (displayName.equalsIgnoreCase("Next Page") || displayName.equalsIgnoreCase("Previous Page"))) {
         } else {
+            // Handle block item clicks
+            if (!clickedItem.hasItemMeta() || !clickedItem.getItemMeta().hasDisplayName()) {
+                return; // Ignore items without a proper display name
+            }
+
+            // Ensure the clicked item is a block material
+            if (!clickedType.isBlock()) {
+                return;
+            }
+
             Material material = clickedItem.getType();
 
             if (blockManager.isBlockDisabled(material)) {
@@ -114,6 +129,8 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
         inventory.setItem(45, FamiUtils.makeItem(Material.COMPASS, "&bSearch", "&7Click to search for a block type."));
         // Add Reset Search item
         inventory.setItem(53, FamiUtils.makeItem(Material.BARRIER, "&cReset Search", "&7Click to reset the search."));
+        // Add Close item
+        inventory.setItem(49, FamiUtils.makeItem(Material.BARRIER, "&cClose", "&7Click to close the menu."));
     }
 
     @Override
@@ -123,16 +140,17 @@ public class DisableInteractionsMenu extends EasyPaginatedMenu implements Listen
 
     @Override
     public List<MenuTag> getMenuTags() {
-        return null;
+        return new ArrayList<>();
     }
 
-    private List<Material> getInteractableMaterials() {
+    private List<Material> getInteractableBlockMaterials() {
         Set<Material> materials = new HashSet<>();
         for (Material material : Material.values()) {
-            if (material.isInteractable()) {
+            if (material.isBlock() && material.isInteractable()) {
                 materials.add(material);
             }
         }
+
         List<Material> materialList = new ArrayList<>(materials);
         materialList.sort(Comparator.comparing(Enum::name));
         return materialList;
